@@ -1,0 +1,18 @@
+.colorSquare {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.colorSquare.red {
+    background-color: red;
+}
+
+.colorSquare.yellow {
+    background-color: yellow;
+}
+
+.colorSquare.green {
+    background-color: green;
+}
