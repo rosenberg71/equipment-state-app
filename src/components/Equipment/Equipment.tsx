@@ -2,6 +2,8 @@ import { Component } from 'react'
 import ColorSquare from './ColorSquare/ColorSquare'
 import { ValidStateColor } from '../../types/ValidStateColor';
 import './Equipment.css';
+import ColorSquareSelector from './ColorSquare/ColorSquareSelector';
+import { ColorSquareSize } from 'types/ColorSquareSize';
 
 interface EquipmentComponentState {
   color: ValidStateColor,
@@ -25,32 +27,40 @@ export default class Equipment extends Component<{}, EquipmentComponentState> {
       console.log("Component mounted. Fetching equipment ID");
       const response = await fetch("http://localhost:3001/api/equipment/id");
 
-      // Check if the response is okay. If not, throw an error.
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Received response:", data);
       this.setState({ id: data.id, isLoading: false });
+
     } catch (error) {
+      // Actually handle the error
       console.log("Error:", error);
     }
   }
 
+  onSquareClicked = (selectedColor: ValidStateColor) => {
+    this.setState({ color: selectedColor });
+  }
+
   render() {
-    if(this.state.isLoading){
+    if (this.state.isLoading) {
       return;
     }
     return (
-      <>
-        <div>Equipment</div>
-        <div className='squareContainer'>
-          <ColorSquare color={ValidStateColor.RED}></ColorSquare>
-          <ColorSquare color={ValidStateColor.YELLOW}></ColorSquare>
-          <ColorSquare color={ValidStateColor.GREEN}></ColorSquare>
+      <div className='equipment-container' >
+        <h3>Equipment ID: {this.state.id}</h3>
+        <div className='square-container'>
+          <h5>Current state of equipment:</h5>
+          <ColorSquare color={this.state.color} size={ColorSquareSize.LARGE}></ColorSquare>
         </div>
-      </>
+        <div className='square-container'>
+          <ColorSquareSelector color={ValidStateColor.RED} selectColorCallback={this.onSquareClicked} />
+          <ColorSquareSelector color={ValidStateColor.YELLOW} selectColorCallback={this.onSquareClicked} />
+          <ColorSquareSelector color={ValidStateColor.GREEN} selectColorCallback={this.onSquareClicked} />
+        </div>
+      </div>
     )
   };
 };
