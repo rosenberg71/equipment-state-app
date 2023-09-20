@@ -4,6 +4,7 @@ import { ValidStateColor } from '../../types/ValidStateColor';
 import './Equipment.css';
 import ColorSquareSelector from './ColorSquare/ColorSquareSelector';
 import { ColorSquareSize } from 'types/ColorSquareSize';
+import ApiService from 'services/ApiService';
 
 interface EquipmentComponentState {
   color: ValidStateColor,
@@ -24,24 +25,28 @@ export default class Equipment extends Component<{}, EquipmentComponentState> {
 
   async componentDidMount() {
     try {
-      console.log("Component mounted. Fetching equipment ID");
-      const response = await fetch("http://localhost:3001/api/equipment/id");
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      this.setState({ id: data.id, isLoading: false });
-
+      const id = await ApiService.fetchEquipmentId();
+      this.setState({id, isLoading: false});
     } catch (error) {
-      // Actually handle the error
+      // Actually handle the error thrown in the API service
       console.log("Error:", error);
     }
   }
 
   onSquareClicked = (selectedColor: ValidStateColor) => {
     this.setState({ color: selectedColor });
+    this.sendStateToServer();
+  }
+
+  async sendStateToServer() {
+    try {
+      const response = await ApiService.sendEquipmentState(this.state.color);
+      // Handle the response, if necessary
+      console.log("State sent successfully!", response);
+    } catch (error) {
+      console.log("Error sending state:", error);
+      // Handle the error, perhaps set some error state or notify the user
+    }
   }
 
   render() {
